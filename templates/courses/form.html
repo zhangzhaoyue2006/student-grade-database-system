@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增课程{% else %}编辑课程{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增课程{% else %}编辑课程{% endif %}</h1>
+    <p class="muted">课程编号唯一，学时和学分必须大于 0。</p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <div class="form-grid-2">
+            <label>课程编号<input type="text" name="course_code" value="{{ course.course_code or '' }}" maxlength="30" required></label>
+            <label>课程名称<input type="text" name="course_name" value="{{ course.course_name or '' }}" maxlength="100" required></label>
+        </div>
+        <label>课程说明<textarea name="course_description" rows="3">{{ course.course_description or '' }}</textarea></label>
+        <div class="form-grid-2">
+            <label>学时<input type="number" name="class_hours" value="{{ course.class_hours or '' }}" min="1" step="1" required></label>
+            <label>学分<input type="number" name="credits" value="{{ course.credits or '' }}" min="0.5" step="0.5" required></label>
+        </div>
+        <div class="form-grid-2">
+            <label>
+                学位等级
+                <select name="degree_level" required>
+                    {% for level in ["本科", "硕士", "博士"] %}
+                        <option value="{{ level }}" {% if course.degree_level == level %}selected{% endif %}>{{ level }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                开课院系
+                <select name="department_id" required>
+                    <option value="">请选择院系</option>
+                    {% for department in departments %}
+                        <option value="{{ department.department_id }}" {% if course.department_id|string == department.department_id|string %}selected{% endif %}>{{ department.department_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存课程{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('courses.list_courses') }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

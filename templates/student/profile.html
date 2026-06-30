@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}个人信息 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>个人信息</h1>
+        <p class="muted">查看本人学籍、专业、院系和联系方式信息。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+</section>
+
+<section class="detail-panel">
+    <dl>
+        <dt>学号</dt><dd>{{ student.student_no }}</dd>
+        <dt>姓名</dt><dd>{{ student.name }}</dd>
+        <dt>身份证号</dt><dd>{{ student.id_card }}</dd>
+        <dt>性别</dt><dd>{{ student.gender }}</dd>
+        <dt>出生日期</dt><dd>{{ student.birth_date or "-" }}</dd>
+        <dt>年级</dt><dd>{{ student.grade_year }}</dd>
+        <dt>学位等级</dt><dd>{{ student.degree_level }}</dd>
+        <dt>主修院系</dt><dd>{{ student.department_name }}</dd>
+        <dt>主修专业</dt><dd>{{ student.major_name }}</dd>
+        <dt>辅修院系</dt><dd>{{ student.minor_department_name or "-" }}</dd>
+        <dt>辅修专业</dt><dd>{{ student.minor_name or "-" }}</dd>
+        <dt>已修学分</dt><dd>{{ student.completed_credits }}</dd>
+        <dt>宿舍</dt><dd>{{ student.dormitory or "-" }}</dd>
+        <dt>家庭地址</dt><dd>{{ student.home_address or "-" }}</dd>
+        <dt>电话</dt><dd>{{ student.phone or "-" }}</dd>
+    </dl>
+</section>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}数据库备份说明 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>数据库备份说明</h1>
+        <p class="muted">课程项目中提供备份命令说明，便于管理员手动导出数据库。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('system.index') }}">返回</a>
+</section>
+
+<section class="detail-panel">
+    <dl>
+        <dt>备份命令</dt>
+        <dd><code>mysqldump --default-character-set=utf8mb4 -u root -p student_grade_system &gt; backup.sql</code></dd>
+        <dt>恢复命令</dt>
+        <dd><code>mysql --default-character-set=utf8mb4 -u root -p student_grade_system &lt; backup.sql</code></dd>
+        <dt>说明</dt>
+        <dd>执行命令后输入 MySQL 密码即可完成导出或恢复。备份文件建议按日期命名，例如 <code>backup_2026_05_21.sql</code>。</dd>
+    </dl>
+</section>
+{% endblock %}

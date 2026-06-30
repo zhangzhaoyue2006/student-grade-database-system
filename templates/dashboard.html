@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}首页 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+    <div class="page-heading">
+        <h1>系统首页</h1>
+        <p class="muted">
+            当前登录用户：{{ session.username }}　
+            角色：
+            {% if role == "admin" %}管理员{% elif role == "teacher" %}教师{% elif role == "student" %}学生{% else %}未知{% endif %}
+        </p>
+    </div>
+
+    <div class="module-grid">
+        {% for title, href in modules %}
+            <a class="module-card" href="{{ href }}">{{ title }}</a>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

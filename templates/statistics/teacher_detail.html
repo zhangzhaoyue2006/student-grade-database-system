@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}课程成绩统计详情 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>课程成绩统计详情</h1>
+        <p class="muted">{{ stats.course_code }} - {{ stats.course_name }}（{{ stats.semester }}）</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('statistics.teacher_statistics', semester=stats.semester) }}">返回</a>
+</section>
+
+<section class="stats-detail-layout">
+<section class="subsection">
+    <h2>统计结果</h2>
+    <section class="stats-metric-grid">
+        <div class="stat-card primary-metric"><strong>{{ stats.completed_count }}/{{ stats.enrolled_count }}</strong><span>完成人数 / 实际选课人数</span></div>
+        <div class="stat-card"><strong>{{ stats.avg_score }}</strong><span>平均分</span></div>
+        <div class="stat-card"><strong>{{ stats.median_score }}</strong><span>中位数</span></div>
+        <div class="stat-card"><strong>{{ stats.max_score|score_int }}</strong><span>最高分</span></div>
+        <div class="stat-card"><strong>{{ stats.min_score|score_int }}</strong><span>最低分</span></div>
+        <div class="stat-card"><strong>{{ stats.pass_rate }}%</strong><span>及格率</span></div>
+        <div class="stat-card"><strong>{{ stats.excellent_rate }}%</strong><span>优秀率</span></div>
+    </section>
+</section>
+
+<section class="subsection">
+    <h2>分数段分布</h2>
+    {% set distribution = stats.distribution %}
+    {% set total_count = distribution.total or 0 %}
+    <div class="chart-panel">
+        <div class="bar-row">
+            <span class="bar-label">90-100</span>
+            <div class="bar-track"><div class="bar-fill excellent" style="width: {{ (distribution.score_90_100 / total_count * 100) if total_count else 0 }}%;"></div></div>
+            <strong>{{ distribution.score_90_100 }}</strong>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label">80-89</span>
+            <div class="bar-track"><div class="bar-fill good" style="width: {{ (distribution.score_80_89 / total_count * 100) if total_count else 0 }}%;"></div></div>
+            <strong>{{ distribution.score_80_89 }}</strong>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label">70-79</span>
+            <div class="bar-track"><div class="bar-fill normal" style="width: {{ (distribution.score_70_79 / total_count * 100) if total_count else 0 }}%;"></div></div>
+            <strong>{{ distribution.score_70_79 }}</strong>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label">60-69</span>
+            <div class="bar-track"><div class="bar-fill pass" style="width: {{ (distribution.score_60_69 / total_count * 100) if total_count else 0 }}%;"></div></div>
+            <strong>{{ distribution.score_60_69 }}</strong>
+        </div>
+        <div class="bar-row">
+            <span class="bar-label">0-59</span>
+            <div class="bar-track"><div class="bar-fill fail" style="width: {{ (distribution.score_0_59 / total_count * 100) if total_count else 0 }}%;"></div></div>
+            <strong>{{ distribution.score_0_59 }}</strong>
+        </div>
+    </div>
+</section>
+</section>
+{% endblock %}

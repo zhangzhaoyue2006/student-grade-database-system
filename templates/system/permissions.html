@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}权限角色说明 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>权限角色说明</h1>
+        <p class="muted">系统采用管理员、教师、学生三类角色进行权限控制。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('system.index') }}">返回</a>
+</section>
+
+<section class="table-panel">
+    <table>
+        <thead><tr><th>角色</th><th>权限范围</th></tr></thead>
+        <tbody>
+            <tr><td>管理员</td><td>维护基础数据、授课和选课关系，查询成绩，查看统计分析，管理用户账号。</td></tr>
+            <tr><td>教师</td><td>查看本人授课课程和学生名单，录入和修改本人授课课程成绩，查看课程成绩统计。</td></tr>
+            <tr><td>学生</td><td>查看个人信息、本人选课和本人成绩。</td></tr>
+            <tr><td>密码安全</td><td>管理员新增账号或重置密码后，用户首次登录必须修改初始密码。</td></tr>
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增选课{% elif mode == "view" %}查看选课{% else %}编辑选课{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增选课{% elif mode == "view" %}查看选课{% else %}编辑选课{% endif %}</h1>
+    <p class="muted">新增记录表示学生已选该课程；删除记录表示学生未选该课程。</p>
+</section>
+
+<section class="form-panel">
+    {% if mode == "view" %}
+        <div class="detail-panel">
+            <dl>
+                <dt>学生</dt>
+                <dd>{{ record.student_no }} - {{ record.student_name }}</dd>
+                <dt>课程</dt>
+                <dd>{{ record.course_code }} - {{ record.course_name }}</dd>
+                <dt>学期</dt>
+                <dd>{{ record.semester }}</dd>
+            </dl>
+        </div>
+        <div class="message">该记录已有成绩，只能查看，不能修改或删除。</div>
+        <div class="form-actions">
+            <a class="button secondary" href="{{ url_for('enrollments.list_enrollments') }}">返回</a>
+        </div>
+    {% else %}
+        <form method="post" class="form wide-form">
+            <label>
+                学生
+                <select name="student_id" required>
+                    <option value="">请选择学生</option>
+                    {% for student in students %}
+                        <option value="{{ student.student_id }}" {% if record.student_id|string == student.student_id|string %}selected{% endif %}>{{ student.student_no }} - {{ student.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                课程
+                <select name="course_id" required>
+                    <option value="">请选择课程</option>
+                    {% for course in courses %}
+                        <option value="{{ course.course_id }}" {% if record.course_id|string == course.course_id|string %}selected{% endif %}>{{ course.course_code }} - {{ course.course_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>学期<input type="text" name="semester" value="{{ record.semester or '2025-2026-1' }}" required></label>
+            <div class="form-actions">
+                <button type="submit">{% if mode == "new" %}保存选课{% else %}保存修改{% endif %}</button>
+                <a class="button secondary" href="{{ url_for('enrollments.list_enrollments') }}">返回</a>
+            </div>
+        </form>
+    {% endif %}
+</section>
+{% endblock %}

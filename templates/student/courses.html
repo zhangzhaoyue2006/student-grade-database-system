@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}我的选课 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>我的选课</h1>
+        <p class="muted">按学期查看本人已选课程、课程信息和学分情况。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+</section>
+
+<form class="toolbar" method="get">
+    <select name="semester" required>
+        <option value="">请选择学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('student_portal.my_courses') }}">重置</a>
+</form>
+
+<section class="module-grid stats-grid">
+    <div class="stat-card"><strong>{{ selected_credits }}</strong><span>该学期选课学分</span></div>
+    <div class="stat-card"><strong>{{ total_completed_credits }}</strong><span>累计已修学分</span></div>
+</section>
+
+{% if has_query %}
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>学期</th>
+                <th>学时</th>
+                <th>学分</th>
+                <th>开课院系</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.course_code }}</td>
+                    <td>{{ course.course_name }}</td>
+                    <td>{{ course.semester }}</td>
+                    <td>{{ course.class_hours }}</td>
+                    <td>{{ course.credits }}</td>
+                    <td>{{ course.department_name }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="empty">该学期暂无选课记录。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% else %}
+<section class="table-panel">
+    <div class="empty">请先选择学期并点击查询，再查看该学期选课记录。</div>
+</section>
+{% endif %}
+{% endblock %}

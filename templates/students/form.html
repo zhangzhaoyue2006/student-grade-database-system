@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增学生{% else %}编辑学生{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增学生{% else %}编辑学生{% endif %}</h1>
+    <p class="muted">学号和身份证号需要保持唯一，辅修专业可为空。</p>
+</section>
+
+<section class="form-panel wide-panel">
+    <form method="post" class="form wide-form">
+        <div class="form-grid-2">
+            <label>学号<input type="text" name="student_no" value="{{ student.student_no or '' }}" maxlength="30" required></label>
+            <label>姓名<input type="text" name="name" value="{{ student.name or '' }}" maxlength="50" required></label>
+        </div>
+        <div class="form-grid-2">
+            <label>身份证号<input type="text" name="id_card" value="{{ student.id_card or '' }}" maxlength="30" required></label>
+            <label>电话<input type="text" name="phone" value="{{ student.phone or '' }}" maxlength="30"></label>
+        </div>
+        <div class="form-grid-3">
+            <label>
+                性别
+                <select name="gender" required>
+                    <option value="">请选择</option>
+                    {% for gender in ["男", "女"] %}
+                        <option value="{{ gender }}" {% if student.gender == gender %}selected{% endif %}>{{ gender }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>出生日期<input type="date" name="birth_date" value="{{ student.birth_date or '' }}"></label>
+            <label>年级<input type="number" name="grade_year" value="{{ student.grade_year or '' }}" min="2000" max="2100" required></label>
+        </div>
+        <div class="form-grid-2">
+            <label>
+                主修专业
+                <select name="major_id" required>
+                    <option value="">请选择专业</option>
+                    {% for major in majors %}
+                        <option value="{{ major.major_id }}" {% if student.major_id|string == major.major_id|string %}selected{% endif %}>{{ major.department_name }} - {{ major.major_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                辅修专业
+                <select name="minor_id">
+                    <option value="">无辅修专业</option>
+                    {% for major in majors %}
+                        <option value="{{ major.major_id }}" {% if student.minor_id|string == major.major_id|string %}selected{% endif %}>{{ major.department_name }} - {{ major.major_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <label>
+            学位等级
+            <select name="degree_level" required>
+                {% for level in ["本科", "硕士", "博士"] %}
+                    <option value="{{ level }}" {% if student.degree_level == level %}selected{% endif %}>{{ level }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        {% if mode == "edit" %}
+            <div class="detail-panel">
+                <dl>
+                    <dt>已修学分</dt>
+                    <dd>{{ student.completed_credits or 0 }}（由已结课且及格的成绩自动计算，管理员不可手动修改）</dd>
+                </dl>
+            </div>
+        {% endif %}
+        <label>宿舍<input type="text" name="dormitory" value="{{ student.dormitory or '' }}" maxlength="100"></label>
+        <label>家庭地址<input type="text" name="home_address" value="{{ student.home_address or '' }}" maxlength="255"></label>
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存学生{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('students.list_students') }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

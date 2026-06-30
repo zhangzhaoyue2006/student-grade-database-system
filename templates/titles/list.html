@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}职称管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>职称管理</h1>
+        <p class="muted">维护教师职称名称和显示级别。</p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+        <a class="button primary" href="{{ url_for('titles.create_title') }}">新增职称</a>
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按职称名称查询">
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('titles.list_titles') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>职称名称</th>
+                <th>级别</th>
+                <th>更新时间</th>
+                <th class="actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for title in titles %}
+                <tr>
+                    <td>{{ title.title_name }}</td>
+                    <td>{{ title.title_level }}</td>
+                    <td>{{ title.updated_at }}</td>
+                    <td class="actions">
+                        <a class="link-button" href="{{ url_for('titles.edit_title', title_id=title.title_id) }}">编辑</a>
+                        <form method="post" action="{{ url_for('titles.delete_title', title_id=title.title_id) }}" onsubmit="return confirm('确定删除该职称吗？');">
+                            <button class="danger-text" type="submit">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="empty">暂无职称数据。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}授课管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>授课管理</h1>
+        <p class="muted">维护教师、课程、学期与授课角色之间的对应关系。</p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+        <a class="button primary" href="{{ url_for('teaching.create_teaching') }}">新增授课</a>
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按教师、课程查询">
+    <select name="semester">
+        <option value="">全部学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <select name="course_status">
+        <option value="">全部状态</option>
+        <option value="open" {% if selected_course_status == "open" %}selected{% endif %}>未结课</option>
+        <option value="closed" {% if selected_course_status == "closed" %}selected{% endif %}>已结课</option>
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('teaching.list_teaching') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>教师</th>
+                <th>课程</th>
+                <th>学期</th>
+                <th>授课角色</th>
+                <th>课程状态</th>
+                <th class="actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                <tr>
+                    <td>{{ record.teacher_no }} - {{ record.teacher_name }}</td>
+                    <td>{{ record.course_code }} - {{ record.course_name }}</td>
+                    <td>{{ record.semester }}</td>
+                    <td>{{ record.teaching_role }}</td>
+                    <td>{{ "未结课" if record.course_status == "open" else "已结课" }}</td>
+                    <td class="actions">
+                        <a class="link-button" href="{{ url_for('teaching.edit_teaching', teacher_id=record.teacher_id, course_id=record.course_id, semester=record.semester) }}">编辑</a>
+                        <form method="post" action="{{ url_for('teaching.delete_teaching', teacher_id=record.teacher_id, course_id=record.course_id, semester=record.semester) }}" onsubmit="return confirm('确定删除该授课安排吗？');">
+                            <button class="danger-text" type="submit">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="6" class="empty">暂无授课安排。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

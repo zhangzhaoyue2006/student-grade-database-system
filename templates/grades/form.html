@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}录入成绩{% else %}编辑成绩{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}录入成绩{% else %}编辑成绩{% endif %}</h1>
+    <p class="muted">
+        {{ course.course_code }} - {{ course.course_name }}，学期：{{ course.semester }}。
+        课程和学期由授课安排确定，教师不能在成绩表单中修改。
+    </p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <label>
+            学生
+            <select name="student_id" required>
+                <option value="">请选择学生</option>
+                {% for student in students %}
+                    <option value="{{ student.student_id }}" {% if grade.student_id|string == student.student_id|string %}selected{% endif %}>
+                        {{ student.student_no }} - {{ student.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <div class="form-grid-3">
+            <label>
+                课程
+                <input type="text" value="{{ course.course_code }} - {{ course.course_name }}" readonly>
+                <input type="hidden" name="course_id" value="{{ course.course_id }}">
+            </label>
+            <label>
+                学期
+                <input type="text" value="{{ course.semester }}" readonly>
+                <input type="hidden" name="semester" value="{{ course.semester }}">
+            </label>
+            <label>
+                考试类型
+                <select name="exam_type" required>
+                    {% for exam_type in ["正考", "补考", "重修"] %}
+                        <option value="{{ exam_type }}" {% if grade.exam_type == exam_type %}selected{% endif %}>{{ exam_type }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <label>
+            分数
+            <input type="number" name="score" value="{{ grade.score|score_int if grade.score is not none else '' }}" min="0" max="100" step="1" required>
+        </label>
+
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存成绩{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('grades.course_grades', course_id=course.course_id, semester=course.semester) }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

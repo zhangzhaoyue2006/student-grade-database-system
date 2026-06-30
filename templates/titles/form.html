@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增职称{% else %}编辑职称{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增职称{% else %}编辑职称{% endif %}</h1>
+    <p class="muted">职称名称唯一，级别用于排序，数字越小排序越靠前。</p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <label>
+            职称名称
+            <input type="text" name="title_name" value="{{ title.title_name or '' }}" maxlength="50" required>
+        </label>
+        <label>
+            级别
+            <input type="number" name="title_level" value="{{ title.title_level or 1 }}" min="1" step="1" required>
+        </label>
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存职称{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('titles.list_titles') }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

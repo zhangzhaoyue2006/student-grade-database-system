@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增用户{% else %}编辑用户{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增用户{% else %}编辑用户{% endif %}</h1>
+    <p class="muted">教师账号需要绑定教师，学生账号需要绑定学生。</p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <label>用户名<input type="text" name="username" value="{{ user.username or '' }}" maxlength="50" required></label>
+
+        {% if mode == "new" %}
+            <div class="form-grid-2">
+                <label>
+                    密码
+                    <input id="user-password" type="password" name="password" required>
+                </label>
+                <label>
+                    确认密码
+                    <input id="user-confirm-password" type="password" name="confirm_password" required>
+                </label>
+            </div>
+        {% endif %}
+
+        <label>
+            角色
+            {% if mode == "edit" and is_self %}
+                <input type="hidden" name="role" value="admin">
+            {% endif %}
+            <select name="role" id="role-select" required {% if mode == "edit" and is_self %}disabled{% endif %}>
+                <option value="">请选择角色</option>
+                <option value="admin" {% if user.role == "admin" %}selected{% endif %}>管理员</option>
+                <option value="teacher" {% if user.role == "teacher" %}selected{% endif %}>教师</option>
+                <option value="student" {% if user.role == "student" %}selected{% endif %}>学生</option>
+            </select>
+        </label>
+
+        <div class="role-binding" id="teacher-binding">
+            <label>
+                绑定教师
+                <select name="related_teacher_id" id="teacher-select">
+                    <option value="">请选择教师</option>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.teacher_id }}" {% if user.related_teacher_id|string == teacher.teacher_id|string %}selected{% endif %}>{{ teacher.teacher_no }} - {{ teacher.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="role-binding" id="student-binding">
+            <label>
+                绑定学生
+                <select name="related_student_id" id="student-select">
+                    <option value="">请选择学生</option>
+                    {% for student in students %}
+                        <option value="{{ student.student_id }}" {% if user.related_student_id|string == student.student_id|string %}selected{% endif %}>{{ student.student_no }} - {{ student.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存用户{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('system.users') }}">返回</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    const roleSelect = document.getElementById("role-select");
+    const teacherBinding = document.getElementById("teacher-binding");
+    const studentBinding = document.getElementById("student-binding");
+    const teacherSelect = document.getElementById("teacher-select");
+    const studentSelect = document.getElementById("student-select");
+
+    function syncRoleBinding() {
+        const role = roleSelect.value;
+        teacherBinding.style.display = role === "teacher" ? "block" : "none";
+        studentBinding.style.display = role === "student" ? "block" : "none";
+
+        teacherSelect.disabled = role !== "teacher";
+        studentSelect.disabled = role !== "student";
+
+        if (role !== "teacher") teacherSelect.value = "";
+        if (role !== "student") studentSelect.value = "";
+    }
+
+    roleSelect.addEventListener("change", syncRoleBinding);
+    syncRoleBinding();
+</script>
+{% endblock %}

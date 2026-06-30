@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}院系管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>院系管理</h1>
+        <p class="muted">维护院系代码、名称、办公地点和联系电话。</p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+        <a class="button primary" href="{{ url_for('departments.create_department') }}">新增院系</a>
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按代码、名称、地点或电话查询">
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('departments.list_departments') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>院系代码</th>
+                <th>院系名称</th>
+                <th>办公地点</th>
+                <th>电话</th>
+                <th>更新时间</th>
+                <th class="actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for department in departments %}
+                <tr>
+                    <td>{{ department.department_code }}</td>
+                    <td>{{ department.department_name }}</td>
+                    <td>{{ department.office_location or "-" }}</td>
+                    <td>{{ department.phone or "-" }}</td>
+                    <td>{{ department.updated_at }}</td>
+                    <td class="actions">
+                        <a class="link-button" href="{{ url_for('departments.edit_department', department_id=department.department_id) }}">编辑</a>
+                        <form method="post" action="{{ url_for('departments.delete_department', department_id=department.department_id) }}" onsubmit="return confirm('确定删除该院系吗？');">
+                            <button class="danger-text" type="submit">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="empty">暂无院系数据。</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

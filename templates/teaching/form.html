@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增授课{% else %}编辑授课{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增授课{% else %}编辑授课{% endif %}</h1>
+    <p class="muted">同一教师、课程、学期组合不能重复。</p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <label>
+            教师
+            <select name="teacher_id" required>
+                <option value="">请选择教师</option>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.teacher_id }}" {% if record.teacher_id|string == teacher.teacher_id|string %}selected{% endif %}>{{ teacher.teacher_no }} - {{ teacher.name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            课程
+            <select name="course_id" required>
+                <option value="">请选择课程</option>
+                {% for course in courses %}
+                    <option value="{{ course.course_id }}" {% if record.course_id|string == course.course_id|string %}selected{% endif %}>{{ course.course_code }} - {{ course.course_name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <div class="form-grid-3">
+            <label>学期<input type="text" name="semester" value="{{ record.semester or '2025-2026-1' }}" required></label>
+            <label>
+                授课角色
+                <select name="teaching_role" required>
+                    {% for role in ["主讲", "助教", "合上"] %}
+                        <option value="{{ role }}" {% if record.teaching_role == role %}selected{% endif %}>{{ role }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>
+                课程状态
+                <select name="course_status" required>
+                    <option value="open" {% if record.course_status == "open" or not record.course_status %}selected{% endif %}>未结课</option>
+                    <option value="closed" {% if record.course_status == "closed" %}selected{% endif %}>已结课</option>
+                </select>
+            </label>
+        </div>
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存授课{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('teaching.list_teaching') }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

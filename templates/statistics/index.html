@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}统计分析 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>统计分析</h1>
+        <p class="muted">先按开课学期或开课院系筛选课程，再进入单门课程查看成绩统计。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+</section>
+
+<form class="toolbar" method="get">
+    <select name="semester">
+        <option value="">全部开课学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <select name="department_id">
+        <option value="">全部开课院系</option>
+        {% for department in departments %}
+            <option value="{{ department.department_id }}" {% if selected_department_id|string == department.department_id|string %}selected{% endif %}>
+                {{ department.department_name }}
+            </option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('statistics.statistics') }}">重置</a>
+</form>
+
+{% if has_filter %}
+<section class="subsection">
+    <h2>课程列表</h2>
+    <div class="table-panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>课程编号</th>
+                    <th>课程名称</th>
+                    <th>学期</th>
+                    <th>开课院系</th>
+                    <th class="actions">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in courses %}
+                    <tr>
+                        <td>{{ course.course_code }}</td>
+                        <td>{{ course.course_name }}</td>
+                        <td>{{ course.semester }}</td>
+                        <td>{{ course.department_name }}</td>
+                        <td class="actions">
+                            <a class="link-button" href="{{ url_for('statistics.admin_course_statistics', course_id=course.course_id, semester=course.semester, return_semester=semester, return_department_id=selected_department_id) }}">查看统计</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="5" class="empty">当前筛选条件下暂无课程。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% else %}
+<section class="table-panel">
+    <div class="empty">请先选择开课学期或开课院系，再查看课程列表。</div>
+</section>
+{% endif %}
+
+{% endblock %}

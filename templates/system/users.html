@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}用户账号管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>用户账号管理</h1>
+        <p class="muted">维护管理员、教师、学生三类登录账号。</p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('system.index') }}">返回</a>
+        <a class="button primary" href="{{ url_for('system.create_user') }}">新增用户</a>
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按用户名、教师或学生查询">
+    <select name="role">
+        <option value="">全部角色</option>
+        <option value="admin" {% if selected_role == "admin" %}selected{% endif %}>管理员</option>
+        <option value="teacher" {% if selected_role == "teacher" %}selected{% endif %}>教师</option>
+        <option value="student" {% if selected_role == "student" %}selected{% endif %}>学生</option>
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('system.users') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>用户名</th>
+                <th>角色</th>
+                <th>绑定对象</th>
+                <th>状态</th>
+                <th>密码状态</th>
+                <th>更新时间</th>
+                <th class="actions wide-actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+                <tr>
+                    <td>{{ user.username }}</td>
+                    <td>{% if user.role == "admin" %}管理员{% elif user.role == "teacher" %}教师{% else %}学生{% endif %}</td>
+                    <td>
+                        {% if user.role == "teacher" %}
+                            {{ user.teacher_no }} - {{ user.teacher_name }}
+                        {% elif user.role == "student" %}
+                            {{ user.student_no }} - {{ user.student_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td><span class="status-badge {{ 'active' if user.is_active else 'inactive' }}">{{ "启用" if user.is_active else "停用" }}</span></td>
+                    <td>{{ "需修改" if user.must_change_password else "正常" }}</td>
+                    <td>{{ user.updated_at }}</td>
+                    <td class="actions wide-actions">
+                        <a class="link-button" href="{{ url_for('system.edit_user', user_id=user.user_id) }}">编辑</a>
+                        {% if current_user_id|string == user.user_id|string %}
+                            <span class="muted">当前账号</span>
+                        {% else %}
+                            <a class="link-button" href="{{ url_for('system.reset_password', user_id=user.user_id) }}">重置密码</a>
+                            <form method="post" action="{{ url_for('system.toggle_user', user_id=user.user_id) }}">
+                                <button class="link-button" type="submit">{{ "停用" if user.is_active else "启用" }}</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="7" class="empty">暂无用户数据。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+
+<section class="subsection">
+    <h2>权限角色说明</h2>
+    <div class="table-panel">
+        <table>
+            <thead><tr><th>角色</th><th>权限范围</th></tr></thead>
+            <tbody>
+                <tr><td>管理员</td><td>维护基础数据、授课和选课关系，查询成绩，查看统计分析，管理用户账号。</td></tr>
+                <tr><td>教师</td><td>查看本人授课课程和学生名单，录入和修改本人授课课程成绩，查看课程成绩统计。</td></tr>
+                <tr><td>学生</td><td>查看个人信息、本人选课和本人成绩。</td></tr>
+                <tr><td>密码安全</td><td>管理员新增账号或重置密码后，用户首次登录必须修改初始密码。</td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

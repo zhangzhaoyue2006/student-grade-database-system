@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}选课管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>选课管理</h1>
+        <p class="muted">维护学生、课程与学期之间的选课关系；新增即视为选课，删除即视为未选课。</p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+        <a class="button primary" href="{{ url_for('enrollments.create_enrollment') }}">新增选课</a>
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按学生、课程查询">
+    <select name="semester">
+        <option value="">全部学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('enrollments.list_enrollments') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>学生</th>
+                <th>课程</th>
+                <th>学期</th>
+                <th class="actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for record in records %}
+                <tr>
+                    <td>{{ record.student_no }} - {{ record.student_name }}</td>
+                    <td>{{ record.course_code }} - {{ record.course_name }}</td>
+                    <td>{{ record.semester }}</td>
+                    <td class="actions">
+                        <a class="link-button" href="{{ url_for('enrollments.edit_enrollment', student_id=record.student_id, course_id=record.course_id, semester=record.semester) }}">{% if record.has_grade %}查看{% else %}编辑{% endif %}</a>
+                        {% if not record.has_grade %}
+                            <form method="post" action="{{ url_for('enrollments.delete_enrollment', student_id=record.student_id, course_id=record.course_id, semester=record.semester) }}" onsubmit="return confirm('确定删除该选课记录吗？删除后表示该学生未选这门课。');">
+                                <button class="danger-text" type="submit">删除</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="4" class="empty">暂无选课记录。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

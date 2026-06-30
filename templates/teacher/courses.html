@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}授课课程与学生名单 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>授课课程与学生名单</h1>
+        <p class="muted">请先选择学期，再查看该学期授课课程；点击“学生名单”进入课程学生名单页面。</p>
+    </div>
+    <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+</section>
+
+<form class="toolbar" method="get">
+    <select name="semester" required>
+        <option value="">请选择学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('teacher_portal.my_courses') }}">重置</a>
+</form>
+
+{% if has_query %}
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>学期</th>
+                <th>角色</th>
+                <th>状态</th>
+                <th>学时</th>
+                <th>学分</th>
+                <th>开课院系</th>
+                <th class="actions">操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+                <tr>
+                    <td>{{ course.course_code }}</td>
+                    <td>{{ course.course_name }}</td>
+                    <td>{{ course.semester }}</td>
+                    <td>{{ course.teaching_role }}</td>
+                    <td>{{ "未结课" if course.course_status == "open" else "已结课" }}</td>
+                    <td>{{ course.class_hours }}</td>
+                    <td>{{ course.credits }}</td>
+                    <td>{{ course.department_name }}</td>
+                    <td class="actions">
+                        <a class="link-button" href="{{ url_for('teacher_portal.course_students', semester=course.semester, course_id=course.course_id) }}">学生名单</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr><td colspan="9" class="empty">该学期暂无授课课程。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% else %}
+<section class="table-panel">
+    <div class="empty">请先选择学期，再查看授课课程。</div>
+</section>
+{% endif %}
+
+{% endblock %}

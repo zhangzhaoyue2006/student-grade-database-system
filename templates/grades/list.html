@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}成绩查询 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>{% if role == "teacher" %}成绩录入与查询{% elif role == "student" %}我的成绩{% else %}成绩查询{% endif %}</h1>
+        <p class="muted">
+            {% if role == "teacher" %}
+                先选择课程进入成绩管理页面；未结课课程可录入和修改，已结课课程只能查询。
+            {% elif role == "student" %}
+                按学期查询已结课课程成绩；已结课但没有成绩的课程按缺考显示。
+            {% else %}
+                管理员仅查询成绩记录，不进行成绩录入或修改。
+            {% endif %}
+        </p>
+    </div>
+    <a class="button secondary" href="{{ url_for('dashboard.dashboard') }}">返回首页</a>
+</section>
+
+{% if role == "teacher" %}
+<section class="subsection">
+    <h2>可录入成绩的课程</h2>
+    <div class="table-panel">
+        <table>
+            <thead>
+                <tr>
+                    <th>课程</th>
+                    <th>学期</th>
+                    <th>状态</th>
+                    <th class="actions">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for course in open_courses %}
+                    <tr>
+                        <td>{{ course.course_code }} - {{ course.course_name }}</td>
+                        <td>{{ course.semester }}</td>
+                        <td>未结课</td>
+                        <td class="actions">
+                            <a class="link-button" href="{{ url_for('grades.course_grades', course_id=course.course_id, semester=course.semester) }}">成绩管理</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="empty">暂无可录入成绩的未结课课程。</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="subsection">
+    <h2>已结课成绩查询</h2>
+    <form class="toolbar" method="get">
+        <select name="closed_semester" required>
+            <option value="">请选择已结课学期</option>
+            {% for item in closed_semesters %}
+                <option value="{{ item.semester }}" {% if closed_semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">查询</button>
+        <a class="button secondary" href="{{ url_for('grades.list_grades') }}">重置</a>
+    </form>
+    {% if closed_semester %}
+        <div class="table-panel">
+            <table>
+                <thead>
+                    <tr>
+                        <th>课程</th>
+                        <th>学期</th>
+                        <th>状态</th>
+                        <th class="actions">操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for course in closed_courses %}
+                        <tr>
+                            <td>{{ course.course_code }} - {{ course.course_name }}</td>
+                            <td>{{ course.semester }}</td>
+                            <td>已结课</td>
+                            <td class="actions">
+                                <a class="link-button" href="{{ url_for('grades.course_grades', course_id=course.course_id, semester=course.semester) }}">查看成绩</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr><td colspan="4" class="empty">该学期暂无已结课课程。</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="table-panel">
+            <div class="empty">请先选择已结课学期，再查询历史课程成绩。</div>
+        </div>
+    {% endif %}
+</section>
+{% elif role == "student" %}
+<form class="toolbar" method="get">
+    <select name="semester" required>
+        <option value="">请选择学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('grades.list_grades') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>课程编号</th>
+                <th>课程名称</th>
+                <th>学期</th>
+                <th>成绩</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if semester %}
+                {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.course_code }}</td>
+                        <td>{{ grade.course_name }}</td>
+                        <td>{{ grade.semester }}</td>
+                        <td>
+                            {% if grade.score is none %}
+                                <span class="grade-missing">缺考</span>
+                            {% else %}
+                                {{ grade.score|score_int }}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr><td colspan="4" class="empty">该学期暂无已结课课程成绩。</td></tr>
+                {% endfor %}
+            {% else %}
+                <tr><td colspan="4" class="empty">请先选择学期，再查询成绩。</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</section>
+{% else %}
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按学生、课程查询">
+    <select name="semester">
+        <option value="">全部学期</option>
+        {% for item in semester_options %}
+            <option value="{{ item.semester }}" {% if semester == item.semester %}selected{% endif %}>{{ item.semester }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('grades.list_grades') }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>学生</th>
+                <th>课程</th>
+                <th>学期</th>
+                <th>考试类型</th>
+                <th>分数</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+                <tr>
+                    <td>{{ grade.student_no }} - {{ grade.student_name }}</td>
+                    <td>{{ grade.course_code }} - {{ grade.course_name }}</td>
+                    <td>{{ grade.semester }}</td>
+                    <td>{{ grade.exam_type }}</td>
+                    <td>{{ grade.score|score_int }}</td>
+                </tr>
+            {% else %}
+                <tr><td colspan="5" class="empty">暂无成绩记录。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+{% endblock %}

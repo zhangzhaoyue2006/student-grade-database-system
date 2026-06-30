@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}课程成绩管理 - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading row-between">
+    <div>
+        <h1>课程成绩管理</h1>
+        <p class="muted">
+            {{ course.course_code }} - {{ course.course_name }}　
+            学期：{{ course.semester }}　
+            状态：{{ "已结课" if is_closed else "未结课" }}
+        </p>
+    </div>
+    <div class="inline-actions">
+        <a class="button secondary" href="{{ url_for('grades.list_grades') }}">返回</a>
+        {% if not is_closed %}
+            <a class="button primary" href="{{ url_for('grades.create_grade', course_id=course.course_id, semester=course.semester) }}">录入成绩</a>
+        {% endif %}
+    </div>
+</section>
+
+<form class="toolbar" method="get">
+    <input type="search" name="keyword" value="{{ keyword }}" placeholder="按学号、姓名查询">
+    <button type="submit">查询</button>
+    <a class="button secondary" href="{{ url_for('grades.course_grades', course_id=course.course_id, semester=course.semester) }}">重置</a>
+</form>
+
+<section class="table-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>学号</th>
+                <th>姓名</th>
+                <th>考试类型</th>
+                <th>分数</th>
+                {% if not is_closed %}<th class="actions">操作</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for grade in grades %}
+                <tr>
+                    <td>{{ grade.student_no }}</td>
+                    <td>{{ grade.student_name }}</td>
+                    <td>{{ grade.exam_type }}</td>
+                    <td>{{ grade.score|score_int }}</td>
+                    {% if not is_closed %}
+                        <td class="actions">
+                            <a class="link-button" href="{{ url_for('grades.edit_grade', grade_id=grade.grade_id) }}">编辑</a>
+                            <form method="post" action="{{ url_for('grades.delete_grade', grade_id=grade.grade_id) }}" onsubmit="return confirm('确定删除该成绩记录吗？');">
+                                <button class="danger-text" type="submit">删除</button>
+                            </form>
+                        </td>
+                    {% endif %}
+                </tr>
+            {% else %}
+                <tr><td colspan="{% if is_closed %}4{% else %}5{% endif %}" class="empty">暂无成绩记录。</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}{% if mode == "new" %}新增院系{% else %}编辑院系{% endif %} - 学生成绩数据库系统{% endblock %}
+
+{% block content %}
+<section class="page-heading">
+    <h1>{% if mode == "new" %}新增院系{% else %}编辑院系{% endif %}</h1>
+    <p class="muted">院系代码和院系名称需要保持唯一。</p>
+</section>
+
+<section class="form-panel">
+    <form method="post" class="form wide-form">
+        <label>
+            院系代码
+            <input type="text" name="department_code" value="{{ department.department_code or '' }}" maxlength="20" required>
+        </label>
+
+        <label>
+            院系名称
+            <input type="text" name="department_name" value="{{ department.department_name or '' }}" maxlength="100" required>
+        </label>
+
+        <label>
+            办公地点
+            <input type="text" name="office_location" value="{{ department.office_location or '' }}" maxlength="100">
+        </label>
+
+        <label>
+            电话
+            <input type="text" name="phone" value="{{ department.phone or '' }}" maxlength="30">
+        </label>
+
+        <div class="form-actions">
+            <button type="submit">{% if mode == "new" %}保存院系{% else %}保存修改{% endif %}</button>
+            <a class="button secondary" href="{{ url_for('departments.list_departments') }}">返回</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
