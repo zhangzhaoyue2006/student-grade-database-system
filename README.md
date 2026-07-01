@@ -207,5 +207,6 @@ ipconfig
 | 文件 | 内容 |
 | --- | --- |
 | `docs/项目文档.md` | 包含数据库设计文档、代码文档和用户操作文档三部分 |
+| `docs/期中展示.pptx` | 期中展示 PPT，包含项目需求理解、初步数据库设计和系统规划 |
 | `docs/final_report.pdf` | 期末项目报告 |
 | `docs/assets/er_diagram.png` | 数据库 ER 图 |
