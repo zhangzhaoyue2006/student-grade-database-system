@@ -208,4 +208,4 @@ ipconfig
 | --- | --- |
 | `docs/项目文档.md` | 包含数据库设计文档、代码文档和用户操作文档三部分 |
 | `docs/final_report.pdf` | 期末项目报告 |
-| `docs/er_diagram.png` | 数据库 ER 图 |
+| `docs/assets/er_diagram.png` | 数据库 ER 图 |
